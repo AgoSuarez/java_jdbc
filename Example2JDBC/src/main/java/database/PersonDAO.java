@@ -17,6 +17,7 @@ public class PersonDAO {
     private static final String SQL_SELECT_BY_ID = "SELECT id_persona, nombre, apellido, email, telefono FROM persona WHERE id_persona=?";
     private static final String SQL_INSERT="INSERT INTO persona(nombre, apellido, email, telefono) VALUES (?,?,?,?)";
     private static final String SQL_UPDATE="UPDATE persona SET nombre=?, apellido=?, email=?, telefono=? WHERE id_persona=?";
+    private static final String SQL_DELETE="DELETE FROM persona WHERE id_persona=?";
     
     public List<Person> getAll() {
         Connection conn = null;
@@ -82,7 +83,7 @@ public class PersonDAO {
         return person;
     }
 
-    public Person Create(Person person) {
+    public Person create(Person person) {
         Connection conn = null;
         PreparedStatement stm = null;
         int affectedRows = 0;
@@ -106,15 +107,21 @@ public class PersonDAO {
             }
         } catch (SQLException ex) {
             Logger.getLogger(PersonDAO.class.getName()).log(Level.SEVERE, null, ex);
+        }finally {
+            try {
+                ConnectionDB.close(stm);
+                ConnectionDB.close(conn);
+            } catch (SQLException ex) {
+                ex.printStackTrace(System.out);
+            }
         }
         return person;
     }
 
-    public int Update(Person person){
+    public int update(Person person){
         Connection conn=null;
         PreparedStatement stm = null;
         int affectedRows = 0;
-        
         try {
             conn = ConnectionDB.getConnection();
             stm=conn.prepareStatement(SQL_UPDATE);
@@ -126,6 +133,35 @@ public class PersonDAO {
             affectedRows=stm.executeUpdate();
         } catch (SQLException ex) {
             ex.printStackTrace(System.out);
+        }finally {
+            try {
+                ConnectionDB.close(stm);
+                ConnectionDB.close(conn);
+            } catch (SQLException ex) {
+                ex.printStackTrace(System.out);
+            }
+        }
+        return affectedRows;
+    }
+
+    public int delete(Person person){
+        Connection conn = null;
+        PreparedStatement stm = null;
+        int affectedRows=0;
+        try {
+            conn=ConnectionDB.getConnection();
+            stm=conn.prepareStatement(SQL_DELETE);
+            stm.setInt(1, person.getIdPerson());
+            affectedRows=stm.executeUpdate();
+        } catch (SQLException ex) {
+            ex.printStackTrace(System.out);
+        }finally {
+            try {
+                ConnectionDB.close(stm);
+                ConnectionDB.close(conn);
+            } catch (SQLException ex) {
+                ex.printStackTrace(System.out);
+            }
         }
         return affectedRows;
     }
