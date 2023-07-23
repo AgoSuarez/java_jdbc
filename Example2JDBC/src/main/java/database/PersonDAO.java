@@ -16,6 +16,7 @@ public class PersonDAO {
     private static final String SQL_SELECT = "SELECT id_persona, nombre, apellido, email, telefono FROM persona";
     private static final String SQL_SELECT_BY_ID = "SELECT id_persona, nombre, apellido, email, telefono FROM persona WHERE id_persona=?";
     private static final String SQL_INSERT="INSERT INTO persona(nombre, apellido, email, telefono) VALUES (?,?,?,?)";
+    private static final String SQL_UPDATE="UPDATE persona SET nombre=?, apellido=?, email=?, telefono=? WHERE id_persona=?";
     
     public List<Person> getAll() {
         Connection conn = null;
@@ -57,7 +58,7 @@ public class PersonDAO {
         try {
             conn = ConnectionDB.getConnection();
             stm = conn.prepareStatement(SQL_SELECT_BY_ID);
-            stm.setInt(1, 3);
+            stm.setInt(1, id);
             rs = stm.executeQuery();
             while (rs.next()) {
                 int idPersona = rs.getInt("id_persona");
@@ -107,5 +108,25 @@ public class PersonDAO {
             Logger.getLogger(PersonDAO.class.getName()).log(Level.SEVERE, null, ex);
         }
         return person;
+    }
+
+    public int Update(Person person){
+        Connection conn=null;
+        PreparedStatement stm = null;
+        int affectedRows = 0;
+        
+        try {
+            conn = ConnectionDB.getConnection();
+            stm=conn.prepareStatement(SQL_UPDATE);
+            stm.setString(1, person.getName());
+            stm.setString(2, person.getLastName());
+            stm.setString(3, person.getEmail());
+            stm.setString(4, person.getPhone());
+            stm.setInt(5, person.getIdPerson());
+            affectedRows=stm.executeUpdate();
+        } catch (SQLException ex) {
+            ex.printStackTrace(System.out);
+        }
+        return affectedRows;
     }
 }
