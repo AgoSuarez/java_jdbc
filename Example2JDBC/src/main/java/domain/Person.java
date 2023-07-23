@@ -75,7 +75,4 @@ public class Person {
     public String toString() {
         return "Person{" + "idPerson=" + idPerson + ", name=" + name + ", lastName=" + lastName + ", email=" + email + ", phone=" + phone + '}';
     }
-    
-    
-    
 }
