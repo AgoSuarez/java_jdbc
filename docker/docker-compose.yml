@@ -1,0 +1,22 @@
+version: '3.3'
+services:
+  db:
+    image: mysql:5.7
+    container_name: test_jdbc
+    restart: always
+    environment:
+      MYSQL_DATABASE: 'test'
+      MYSQL_USER: 'user'
+      MYSQL_PASSWORD: 'password'
+      MYSQL_ROOT_PASSWORD: 'password'
+    ports:
+      - '3306:3306'
+    expose:
+      - '3306'
+    volumes:
+      - ./db_test:/var/lib/mysql
+#Si queremosque se ejecute un script al iniciar el contenedor
+      - ./db:/docker-entrypoint-initdb.d/
+volumes:
+  db:
+    driver: local
