@@ -5,14 +5,18 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 public class PersonDAO {
 
     private static final String SQL_SELECT = "SELECT id_persona, nombre, apellido, email, telefono FROM persona";
     private static final String SQL_SELECT_BY_ID = "SELECT id_persona, nombre, apellido, email, telefono FROM persona WHERE id_persona=?";
-
+    private static final String SQL_INSERT="INSERT INTO persona(nombre, apellido, email, telefono) VALUES (?,?,?,?)";
+    
     public List<Person> getAll() {
         Connection conn = null;
         PreparedStatement stm = null;
@@ -77,5 +81,31 @@ public class PersonDAO {
         return person;
     }
 
-    
+    public Person Create(Person person) {
+        Connection conn = null;
+        PreparedStatement stm = null;
+        int affectedRows = 0;
+        
+        try {
+            conn=ConnectionDB.getConnection();
+            stm=conn.prepareStatement(SQL_INSERT, Statement.RETURN_GENERATED_KEYS);
+            stm.setString(1, person.getName());
+            stm.setString(2, person.getLastName());
+            stm.setString(3, person.getEmail());
+            stm.setString(4, person.getPhone());
+            affectedRows=stm.executeUpdate();
+            if (affectedRows == 1){
+                try (ResultSet generatedKeys = stm.getGeneratedKeys()){
+                    if (generatedKeys.next()) {
+                            person.setIdPerson(generatedKeys.getInt(1));
+                        }
+                }catch (SQLException ex){
+                    ex.printStackTrace(System.out);
+                }
+            }
+        } catch (SQLException ex) {
+            Logger.getLogger(PersonDAO.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return person;
+    }
 }
